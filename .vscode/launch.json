@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Finance App (Web - Chrome)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define=USER_EMAIL_1=jordaniel04@gmail.com",
+                "--dart-define=USER_EMAIL_2=becerrasotoleydivanesa@gmail.com"
+            ]
+        },
+        {
+            "name": "Finance App (Android/iOS)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define=USER_EMAIL_1=jordaniel04@gmail.com",
+                "--dart-define=USER_EMAIL_2=becerrasotoleydivanesa@gmail.com"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función centralizada para validar el acceso de las 2 personas autorizadas.
+    // Esta validación ocurre en los servidores de Firebase, protegiendo tus datos
+    // incluso si alguien intenta acceder fuera de tu aplicación Flutter.
+    function isWhitelisted() {
+      return request.auth != null && (
+        request.auth.token.email == 'jordaniel04@gmail.com' || 
+        request.auth.token.email == 'becerrasotoleydivanesa@gmail.com'
+      );
+    }
+
+    // Regla restrictiva: Solo permite operaciones si el email coincide con la whitelist.
+    match /{document=**} {
+      allow read, write: if isWhitelisted();
+    }
+  }
+}
