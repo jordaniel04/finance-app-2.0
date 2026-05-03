@@ -29,16 +29,14 @@ class DefaultFirebaseOptions {
           'Linux no está configurado todavía para este proyecto.',
         );
       default:
-        throw UnsupportedError(
-          'Plataforma no soportada para este proyecto.',
-        );
+        throw UnsupportedError('Plataforma no soportada para este proyecto.');
     }
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBO-7_M6Z_... (RESTAURACION)',
-    appId: '1:368153322055:web:4f620eb58e99de25dc5617',
-    messagingSenderId: '368153322055',
+    apiKey: 'AIzaSyBw4THyt4pJRmUaXtAvkU5L1eUoephq7yw',
+    appId: '1:474729885346:web:d61675fd0aa3d8a024f1fb',
+    messagingSenderId: '474729885346',
     projectId: 'financeapp2-3fecd',
     authDomain: 'financeapp2-3fecd.firebaseapp.com',
     storageBucket: 'financeapp2-3fecd.firebasestorage.app',
