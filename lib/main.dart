@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
         child: BlocBuilder<ThemeCubit, bool>(
           builder: (context, isDark) {
             return MaterialApp(
-              title: 'Finance App 2.0',
+              title: 'Nuestras Finanzas',
               debugShowCheckedModeBanner: false,
               localizationsDelegates: const [
                 GlobalMaterialLocalizations.delegate,

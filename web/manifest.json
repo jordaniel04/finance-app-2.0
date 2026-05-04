@@ -1,11 +1,11 @@
 {
-    "name": "finance_app_2_0",
-    "short_name": "finance_app_2_0",
+    "name": "Finance App",
+    "short_name": "Finanzas",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0F172A",
+    "theme_color": "#6366F1",
+    "description": "Gestión de finanzas personales.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

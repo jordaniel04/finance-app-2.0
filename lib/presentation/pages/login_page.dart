@@ -34,14 +34,14 @@ class LoginPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.account_balance_wallet_rounded,
-                    size: 80,
-                    color: c.primary,
+                  Image.asset(
+                    'assets/icons/icono.png',
+                    width: 100,
+                    height: 100,
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Finance App 2.0',
+                    'Nuestras Finanzas',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 32,

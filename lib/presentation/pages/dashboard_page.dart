@@ -1,3 +1,6 @@
+import 'dart:ui' show lerpDouble;
+
+import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -25,10 +28,7 @@ class DashboardPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: c.surface,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: c.textPrimary),
-          onPressed: () {},
-        ),
+        automaticallyImplyLeading: false,
         title: Text(
           'Transacciones',
           style: TextStyle(
@@ -79,36 +79,41 @@ class DashboardPage extends StatelessWidget {
 
           return Skeletonizer(
             enabled: isLoading,
-            child: Column(
+            child: Stack(
               children: [
-                const AiTipBanner(),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: () {
-                      final authState =
-                          context.read<AuthCubit>().state as Authenticated;
-                      return context
-                          .read<TransactionCubit>()
-                          .loadTransactions(
-                            authState.user.id,
-                            month: displayState.selectedMonth,
-                            year: displayState.selectedYear,
-                          );
-                    },
-                    child: _buildDayGroupList(context, displayState, isLoading),
+                Column(
+                  children: [
+                    const AiTipBanner(),
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () {
+                          final authState =
+                              context.read<AuthCubit>().state as Authenticated;
+                          return context
+                              .read<TransactionCubit>()
+                              .loadTransactions(
+                                authState.user.id,
+                                month: displayState.selectedMonth,
+                                year: displayState.selectedYear,
+                              );
+                        },
+                        child: _buildDayGroupList(context, displayState, isLoading),
+                      ),
+                    ),
+                    _BottomSummaryBar(state: displayState),
+                  ],
+                ),
+                Positioned(
+                  right: 0,
+                  bottom: 60,
+                  child: _EdgeFab(
+                    onPressed: () => _showAddTransactionDialog(context),
                   ),
                 ),
-                _BottomSummaryBar(state: displayState),
               ],
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_dashboard',
-        onPressed: () => _showAddTransactionDialog(context),
-        backgroundColor: c.primary,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
   }
@@ -645,6 +650,119 @@ class _Divider extends StatelessWidget {
       height: 28,
       margin: const EdgeInsets.symmetric(horizontal: 4),
       color: c.divider,
+    );
+  }
+}
+
+// ─── Edge FAB ───────────────────────────────────────────────────────────────
+
+class _EdgeFab extends StatefulWidget {
+  final VoidCallback onPressed;
+  const _EdgeFab({required this.onPressed});
+
+  @override
+  State<_EdgeFab> createState() => _EdgeFabState();
+}
+
+class _EdgeFabState extends State<_EdgeFab>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _slideAnim;
+  bool _touchExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+    );
+    _slideAnim = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onEnter(_) => _controller.forward();
+  void _onExit(_) => _controller.reverse();
+
+  void _onTapDown(TapDownDetails details) {
+    final isMouseTap = details.kind == PointerDeviceKind.mouse ||
+        details.kind == PointerDeviceKind.stylus;
+    if (isMouseTap) return; // mouse uses hover; tap fires directly via onTap
+
+    // touch: first tap expands, second tap fires action
+    if (_touchExpanded) {
+      setState(() => _touchExpanded = false);
+      _controller.reverse();
+      widget.onPressed();
+    } else {
+      setState(() => _touchExpanded = true);
+      _controller.forward();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = AppColors.of(context);
+    return MouseRegion(
+      onEnter: _onEnter,
+      onExit: _onExit,
+      child: GestureDetector(
+        onTapDown: _onTapDown,
+        onTap: () {
+          // fires only for mouse clicks (touch is handled in onTapDown)
+          if (_touchExpanded) return;
+          widget.onPressed();
+        },
+        child: AnimatedBuilder(
+          animation: _slideAnim,
+          builder: (context, child) {
+            const collapsedVisible = 6.0;
+            const expandedWidth = 56.0;
+            final t = _slideAnim.value;
+            final visibleWidth =
+                collapsedVisible + (expandedWidth - collapsedVisible) * t;
+
+            // collapsed: pill (all corners round) → expanded: drop shape
+            final borderRadius = BorderRadius.only(
+              topLeft: Radius.circular(32),
+              bottomLeft: Radius.circular(24),
+              topRight: Radius.circular(lerpDouble(28, 6, t)!),
+              bottomRight: Radius.circular(lerpDouble(28, 6, t)!),
+            );
+
+            return ClipRRect(
+              borderRadius: borderRadius,
+              child: Align(
+                alignment: Alignment.centerRight,
+                widthFactor: visibleWidth / expandedWidth,
+                child: Container(
+                  width: expandedWidth,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: c.primary,
+                    boxShadow: [
+                      BoxShadow(
+                        color: c.primary.withValues(alpha: 0.35),
+                        blurRadius: 6,
+                        offset: const Offset(-2, 2),
+                      ),
+                    ],
+                  ),
+                  child: child,
+                ),
+              ),
+            );
+          },
+          child: const Center(
+            child: Icon(Icons.add, color: Colors.white, size: 28),
+          ),
+        ),
+      ),
     );
   }
 }

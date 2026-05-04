@@ -7,7 +7,6 @@ import '../../core/utils/icon_map.dart';
 import '../../data/repositories/ai_tip_repository.dart';
 import '../blocs/auth_cubit.dart';
 import '../blocs/auth_state.dart';
-import '../widgets/ai_tip_banner.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/entities/transaction_type.dart';
@@ -289,8 +288,6 @@ class _MensualTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const AiTipCard(),
-        const SizedBox(height: 16),
         if (expenses.isNotEmpty) ...[
           _SectionHeader(
               label: 'Egresos', color: AppColors.expense),
